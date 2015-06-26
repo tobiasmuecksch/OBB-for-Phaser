@@ -23,7 +23,7 @@ OBB.setOBB(this.game);
 As soon as this project is stable and safe to use, I will add it to bower.
 
 ## License
-MIT. See the LICENSE.md file in this repository for mor information.
+MIT. See the LICENSE.md file in this repository for more information.
 
 ## Use it on your own risk!
 Be aware that you use this code on your own risk. The authors of this code won't take any responsibilites for anything.
