@@ -1,11 +1,11 @@
 var OBB = {
 
 	// Check for a collision.
-	// A and B have to be fo type Phaser.Physic.Arcade.Body 
-	collisionCheck: function  (A, B) {
-		var ARect = OBB.createRectangle(A.center, OBB.rotateVector([A.halfWidth, A.halfHeight], Phaser.Math.degToRad(A.angle)));
-		var BRect = OBB.createRectangle(B.center, OBB.rotateVector([B.halfWidth, B.halfHeight], Phaser.Math.degToRad(B.angle)));
-		
+	// A and B have to be fo type Phaser.Physic.Arcade.Body
+	collisionCheck: function(A, B) {
+		var ARect = OBB.createRectangle([A.center.x, A.center.y], OBB.rotateVector([A.halfWidth, A.halfHeight], Phaser.Math.degToRad(A.angle)));
+		var BRect = OBB.createRectangle([B.center.x, B.center.y], OBB.rotateVector([B.halfWidth, B.halfHeight], Phaser.Math.degToRad(B.angle)));
+
 		return OBB.isecRects(ARect, BRect);
 	},
 
