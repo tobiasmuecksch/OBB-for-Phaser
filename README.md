@@ -15,7 +15,7 @@ This project is in a testing state. Please feel free to add pull requests and is
 ```
 - Then in your game.js add this line in the preload function (I assume you already have started the Arcade physics)
 ```
-OBB.setOBB(this.game.world);
+OBB.setOBB(this.game);
 ```
 
 

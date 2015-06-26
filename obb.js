@@ -3,8 +3,8 @@ var OBB = {
 	// Check for a collision.
 	// A and B have to be fo type Phaser.Physic.Arcade.Body 
 	collisionCheck: function  (A, B) {
-		var ARect = OBB.createRectangle(A.center, rotateVector([A.halfWidth, A.halfHeight], Phaser.Math.degToRad(A.angle)));
-		var BRect = OBB.createRectangle(B.center, rotateVector([B.halfWidth, B.halfHeight], Phaser.Math.degToRad(B.angle)));
+		var ARect = OBB.createRectangle(A.center, OBB.rotateVector([A.halfWidth, A.halfHeight], Phaser.Math.degToRad(A.angle)));
+		var BRect = OBB.createRectangle(B.center, OBB.rotateVector([B.halfWidth, B.halfHeight], Phaser.Math.degToRad(B.angle)));
 		
 		return OBB.isecRects(ARect, BRect);
 	},
@@ -79,6 +79,7 @@ var OBB = {
 
 	// Overwrite the seperate function for OBB collision detection
 	separate: function (body1, body2, processCallback, callbackContext, overlapOnly) {
+		console.log("SEPARATE");
 		if (!body1.enable || !body2.enable)
 		{
 			return false;
@@ -90,12 +91,12 @@ var OBB = {
 			return false;
 		}
 
-		return OBB.checkIntersection(body1, body2);
+		return OBB.collisionCheck(body1, body2);
 	},
 
 	// This function is used to overwrite the seperate function of a Phase.Arcade.World instance.
-	setOBB: function (aracadeRef) {
-		aracadeRef.separate = OBB.separate;
+	setOBB: function (gameRef) {
+		gameRef.physics.arcade.separate = OBB.separate;
 	}
 
 };
