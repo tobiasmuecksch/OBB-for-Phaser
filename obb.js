@@ -102,3 +102,27 @@ var OBB = {
 	}
 
 };
+
+OBB.debug = {
+
+	drawVertices: function (body, color) {
+		var color = color ? color : 0xff0000; // RED
+		if (!body.obbDebug)
+			body.obbDebug = OBB.game.add.graphics(0, 0);
+
+		var r = OBB.createRectangle(body);;
+
+		if (body.obbDebug)
+			body.obbDebug.destroy();
+		// add a new graphics object
+		body.obbDebug = OBB.game.add.graphics(0, 0);
+
+		// add the vertices
+		body.obbDebug.lineStyle(1, color);
+		body.obbDebug.drawCircle(r[0], r[1], 10);
+		body.obbDebug.drawCircle(r[2], r[3], 10);
+		body.obbDebug.drawCircle(r[4], r[5], 10);
+		body.obbDebug.drawCircle(r[6], r[7], 10);
+	}
+	
+};
