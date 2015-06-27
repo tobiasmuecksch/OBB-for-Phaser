@@ -34,6 +34,9 @@ render: function () {
 ## Bower
 As soon as this project is stable and safe to use, I will add it to bower.
 
+## Known issues
+- Currently the collision detection works fine, but **collided objects do not bounce off each other yet**.
+
 ## License
 MIT. See the LICENSE.md file in this repository for more information.
 
