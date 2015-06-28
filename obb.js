@@ -1,12 +1,18 @@
 var OBB = {
 
 	// Check for a collision.
-	// A and B have to be fo type Phaser.Physic.Arcade.Body
+	// A and B have to be of type Phaser.Physic.Arcade.Body
 	collisionCheck: function  (A, B) {
 		var ARect = OBB.createRectangle(A);
 		var BRect = OBB.createRectangle(B);
 
-		return OBB.isecRects(ARect, BRect);
+		if (OBB.isecRects(ARect, BRect)) {
+			this.bounceHandlerX(A, B);
+			this.bounceHandlerY(A, B);
+			return true;
+		}
+
+		return false;
 	},
 
 	// We assume a vector consisting of [halfWidth, halfHeight], which can be used to point from the center to the edges
@@ -95,6 +101,104 @@ var OBB = {
 		return OBB.collisionCheck(body1, body2);
 	},
 
+	// Source: separateX-function in https://github.com/photonstorm/phaser/blob/master/src/physics/arcade/World.js
+	bounceHandlerX: function (body1, body2) {
+		var overlap = 1;
+		var v1 = body1.velocity.x;
+		var v2 = body2.velocity.x;
+
+		if (!body1.immovable && !body2.immovable)
+		{
+			overlap *= 0.5;
+
+			body1.x = body1.x - overlap;
+			body2.x += overlap;
+
+			var nv1 = Math.sqrt((v2 * v2 * body2.mass) / body1.mass) * ((v2 > 0) ? 1 : -1);
+			var nv2 = Math.sqrt((v1 * v1 * body1.mass) / body2.mass) * ((v1 > 0) ? 1 : -1);
+			var avg = (nv1 + nv2) * 0.5;
+
+			nv1 -= avg;
+			nv2 -= avg;
+
+			body1.velocity.x = avg + nv1 * body1.bounce.x;
+			body2.velocity.x = avg + nv2 * body2.bounce.x;
+		}
+		else if (!body1.immovable)
+		{
+			body1.x = body1.x - overlap;
+			body1.velocity.x = v2 - v1 * body1.bounce.x;
+
+			//  This is special case code that handles things like vertically moving platforms you can ride
+			if (body2.moves)
+			{
+				body1.y += (body2.y - body2.prev.y) * body2.friction.y;
+			}
+		}
+		else if (!body2.immovable)
+		{
+			body2.x += overlap;
+			body2.velocity.x = v1 - v2 * body2.bounce.x;
+
+			//  This is special case code that handles things like vertically moving platforms you can ride
+			if (body1.moves)
+			{
+				body2.y += (body1.y - body1.prev.y) * body1.friction.y;
+			}
+		}
+
+		return true;
+	},
+
+	// Source: separateX-function in https://github.com/photonstorm/phaser/blob/master/src/physics/arcade/World.js
+	bounceHandlerY: function (body1, body2) {
+		var overlap = 1;
+		var v1 = body1.velocity.y;
+		var v2 = body2.velocity.y;
+
+		if (!body1.immovable && !body2.immovable)
+		{
+			overlap *= 0.5;
+
+			body1.y = body1.y - overlap;
+			body2.y += overlap;
+
+			var nv1 = Math.sqrt((v2 * v2 * body2.mass) / body1.mass) * ((v2 > 0) ? 1 : -1);
+			var nv2 = Math.sqrt((v1 * v1 * body1.mass) / body2.mass) * ((v1 > 0) ? 1 : -1);
+			var avg = (nv1 + nv2) * 0.5;
+
+			nv1 -= avg;
+			nv2 -= avg;
+
+			body1.velocity.y = avg + nv1 * body1.bounce.y;
+			body2.velocity.y = avg + nv2 * body2.bounce.y;
+		}
+		else if (!body1.immovable)
+		{
+			body1.y = body1.y - overlap;
+			body1.velocity.y = v2 - v1 * body1.bounce.y;
+
+			//  This is special case code that handles things like vertically moving platforms you can ride
+			if (body2.moves)
+			{
+				body1.x += (body2.x - body2.prev.x) * body2.friction.x;
+			}
+		}
+		else if (!body2.immovable)
+		{
+			body2.y += overlap;
+			body2.velocity.y = v1 - v2 * body2.bounce.y;
+
+			//  This is special case code that handles things like vertically moving platforms you can ride
+			if (body1.moves)
+			{
+				body2.x += (body1.x - body1.prev.x) * body1.friction.x;
+			}
+		}
+
+		return true;
+	},
+
 	// This function is used to overwrite the seperate function of a Phase.Arcade.World instance.
 	setOBB: function (gameRef) {
 		OBB.game = gameRef;
@@ -124,5 +228,5 @@ OBB.debug = {
 		body.obbDebug.drawCircle(r[4], r[5], 10);
 		body.obbDebug.drawCircle(r[6], r[7], 10);
 	}
-	
+
 };
