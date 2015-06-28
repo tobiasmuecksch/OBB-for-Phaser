@@ -18,9 +18,24 @@ This project is in a testing state. Please feel free to add pull requests and is
 OBB.setOBB(this.game);
 ```
 
+## Debugging
+For debugging purposes you can use the OBB.debug object. Currently it only supports drwaing the vertices of bodies.
+You can use it like this:
+```
+render: function () {
+    // Standard for the drawn vertices is red
+    OBB.debug.drawVertices(this.player.body);
+    
+    // Or you can set a custom color; blue for example
+    // OBB.debug.drawVertices(this.player.body, "0x0000ff");
+}
+```
 
 ## Bower
 As soon as this project is stable and safe to use, I will add it to bower.
+
+## Known issues
+- Currently the collision detection works fine, but **collided objects do not bounce off each other yet**.
 
 ## License
 MIT. See the LICENSE.md file in this repository for more information.
