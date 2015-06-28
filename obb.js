@@ -5,10 +5,24 @@ var OBB = {
 	collisionCheck: function  (A, B) {
 		var ARect = OBB.createRectangle(A);
 		var BRect = OBB.createRectangle(B);
+		var overlapVector = [1, 1];
 
 		if (OBB.isecRects(ARect, BRect)) {
-			this.bounceHandlerX(A, B);
-			this.bounceHandlerY(A, B);
+			/*for (var i = 0; i < 8; i = i+2) {
+				var result = OBB.pointInRectangle(BRect, [ARect[i],ARect[i+1]]);
+				if (A.manager && result) {
+					// Source: http://stackoverflow.com/questions/11301438/return-index-of-greatest-value-in-an-array
+ 					var index = result.reduce(function(iMax,x,i,a) {return x>a[iMax] ? i : iMax;}, 0);
+
+					var point = [BRect[i],BRect[i+1]];
+					var line = [ARect[index], ARect[index+1], ARect[(index+2) % 7], ARect[(index+3) % 7]];
+
+					overlapVector = OBB.lineToPointVector(line, point);
+				}
+			}*/
+
+			this.bounceHandlerX(A, B, overlapVector);
+			this.bounceHandlerY(A, B, overlapVector);
 			return true;
 		}
 
@@ -101,15 +115,42 @@ var OBB = {
 		return OBB.collisionCheck(body1, body2);
 	},
 
-	// Source: separateX-function in https://github.com/photonstorm/phaser/blob/master/src/physics/arcade/World.js
-	bounceHandlerX: function (body1, body2) {
-		var overlap = 1;
+	// returns true if the point lies in the reactangle
+	// Algorithm found there: http://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
+	pointInRectangle: function (rect, point) {
+		var xp = point[0],
+			yp = point[1];
+
+		var D = [];
+
+		for (var i = 0; i<8; i = i+2) {
+			var x1 = rect[i],
+				y1 = rect[i+1],
+				x2 = rect[(i+2) % 7],
+				y2 = rect[(i+3) % 7];
+
+			var A = -(y2 - y1),
+				B = x2 - x1,
+				C = -(A * x1 + B * y1);
+
+			D.push( A * xp + B * yp + C );
+		}
+
+		return (D[0] < 0 && D[1] < 0 && D[2] < 0 && D[3] < 0) ? D : false;
+	},
+
+	bounceHandlerX: function (body1, body2, overlapVector) {
+		if (overlapVector[0])
+			var overlap = overlapVector[0];
+		else
+			var overlap = 1;
+
 		var v1 = body1.velocity.x;
 		var v2 = body2.velocity.x;
 
 		if (!body1.immovable && !body2.immovable)
 		{
-			overlap *= 0.5;
+			//overlap *= 0.5;
 
 			body1.x = body1.x - overlap;
 			body2.x += overlap;
@@ -150,15 +191,18 @@ var OBB = {
 		return true;
 	},
 
-	// Source: separateX-function in https://github.com/photonstorm/phaser/blob/master/src/physics/arcade/World.js
-	bounceHandlerY: function (body1, body2) {
-		var overlap = 1;
+	bounceHandlerY: function (body1, body2, overlapVector) {
+		if (overlapVector[1])
+			var overlap = overlapVector[1];
+		else
+			var overlap = 1;
+
 		var v1 = body1.velocity.y;
 		var v2 = body2.velocity.y;
 
 		if (!body1.immovable && !body2.immovable)
 		{
-			overlap *= 0.5;
+			//overlap *= 0.5;
 
 			body1.y = body1.y - overlap;
 			body2.y += overlap;
@@ -203,6 +247,26 @@ var OBB = {
 	setOBB: function (gameRef) {
 		OBB.game = gameRef;
 		gameRef.physics.arcade.separate = OBB.separate;
+	},
+
+	// Line  = [x1, y1, x2, y2]
+	// returns the shortest vector from the line to the point in format [x, y]
+	lineToPointVector: function(line, point) {
+		var p0 = [line[0], line[1]],
+			p1 = [line[2], line[3]],
+			p2 = point;
+
+		var x10 = p1[0] - p0[0],
+			y10 = p1[1] - p0[1],
+			x20 = p2[0] - p0[0],
+			y20 = p2[1] - p0[1];
+
+		var t = (x20 * x10 + y20 * y10) / (x10 * x10 + y10 * y10),
+			x10 = p1[0] - p0[0],
+			y10 = p1[1] - p0[1],
+			p3 = [p0[0] + t * x10, p0[1] + t * y10];
+
+		return [point[0] - p3[0], point[1] - p3[1]];
 	}
 
 };
