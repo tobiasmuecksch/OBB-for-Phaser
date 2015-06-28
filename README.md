@@ -25,7 +25,7 @@ You can use it like this:
 render: function () {
     // Standard for the drawn vertices is red
     OBB.debug.drawVertices(this.player.body);
-    
+
     // Or you can set a custom color; blue for example
     // OBB.debug.drawVertices(this.player.body, "0x0000ff");
 }
@@ -35,7 +35,7 @@ render: function () {
 As soon as this project is stable and safe to use, I will add it to bower.
 
 ## Known issues
-- Currently the collision detection works fine, but **collided objects do not bounce off each other yet**.
+- Currently the collision detection works fine, but **collided objects do not correctly bounce off each other yet**.
 
 ## License
 MIT. See the LICENSE.md file in this repository for more information.
