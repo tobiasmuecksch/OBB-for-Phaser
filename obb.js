@@ -6,9 +6,10 @@ var OBB = {
 		var ARect = OBB.createRectangle(A);
 		var BRect = OBB.createRectangle(B);
 		var overlapVector = [1, 1];
+		var edgeNr = 0;
 
 		if (OBB.isecRects(ARect, BRect)) {
-			/*for (var i = 0; i < 8; i = i+2) {
+			for (var i = 7; i >= 0; i = i-2) {
 				var result = OBB.pointInRectangle(BRect, [ARect[i],ARect[i+1]]);
 				if (A.manager && result) {
 					// Source: http://stackoverflow.com/questions/11301438/return-index-of-greatest-value-in-an-array
@@ -18,11 +19,12 @@ var OBB = {
 					var line = [ARect[index], ARect[index+1], ARect[(index+2) % 7], ARect[(index+3) % 7]];
 
 					overlapVector = OBB.lineToPointVector(line, point);
+					edgeNr = i;
 				}
-			}*/
+			}
 
-			this.bounceHandlerX(A, B, overlapVector);
-			this.bounceHandlerY(A, B, overlapVector);
+			this.bounceHandlerX(B, A, overlapVector, edgeNr);
+			this.bounceHandlerY(B, A, overlapVector, edgeNr);
 			return true;
 		}
 
@@ -139,18 +141,23 @@ var OBB = {
 		return (D[0] < 0 && D[1] < 0 && D[2] < 0 && D[3] < 0) ? D : false;
 	},
 
-	bounceHandlerX: function (body1, body2, overlapVector) {
+	bounceHandlerX: function (body1, body2, overlapVector, edgeNr) {
 		if (overlapVector[0])
-			var overlap = overlapVector[0];
+			var overlap = Math.max(overlapVector[0], body2.halfWidth);
 		else
 			var overlap = 1;
+
+			overlap = 0;
+
+		if (edgeNr != 6 || edgeNr != 0)
+			overlap = overlap * -1;
 
 		var v1 = body1.velocity.x;
 		var v2 = body2.velocity.x;
 
 		if (!body1.immovable && !body2.immovable)
 		{
-			//overlap *= 0.5;
+			overlap *= 0.5;
 
 			body1.x = body1.x - overlap;
 			body2.x += overlap;
@@ -191,18 +198,24 @@ var OBB = {
 		return true;
 	},
 
-	bounceHandlerY: function (body1, body2, overlapVector) {
+	bounceHandlerY: function (body1, body2, overlapVector, edgeNr) {
 		if (overlapVector[1])
-			var overlap = overlapVector[1];
+			var overlap = Math.max(overlapVector[1], body2.halfHeight);
 		else
 			var overlap = 1;
+
+			overlap = 0;
+
+		if (edgeNr != 6 || edgeNr != 0)
+			overlap = overlap * -1;
+
 
 		var v1 = body1.velocity.y;
 		var v2 = body2.velocity.y;
 
 		if (!body1.immovable && !body2.immovable)
 		{
-			//overlap *= 0.5;
+			overlap *= 0.5;
 
 			body1.y = body1.y - overlap;
 			body2.y += overlap;
@@ -266,7 +279,7 @@ var OBB = {
 			y10 = p1[1] - p0[1],
 			p3 = [p0[0] + t * x10, p0[1] + t * y10];
 
-		return [point[0] - p3[0], point[1] - p3[1]];
+		return [p3[0] - point[0], p3[1] - point[1]];
 	}
 
 };
