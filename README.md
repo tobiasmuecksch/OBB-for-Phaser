@@ -36,6 +36,7 @@ As soon as this project is stable and safe to use, I will add it to bower.
 
 ## Known issues
 - Currently the collision detection works fine, but **collided objects do not correctly bounce off each other yet**.
+- There is no touching state
 
 ## License
 MIT. See the LICENSE.md file in this repository for more information.
