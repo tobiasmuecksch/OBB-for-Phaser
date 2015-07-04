@@ -2,29 +2,33 @@ var OBB = {
 
 	// Check for a collision.
 	// A and B have to be of type Phaser.Physic.Arcade.Body
-	collisionCheck: function  (A, B) {
+	collisionCheck: function  (A, B, overlapOnly) {
 		var ARect = OBB.createRectangle(A);
 		var BRect = OBB.createRectangle(B);
 		var overlapVector = [1, 1];
-		var edgeNr = 0;
+		var edgeNr = -1;
 
 		if (OBB.isecRects(ARect, BRect)) {
-			for (var i = 7; i >= 0; i = i-2) {
+			var BPoint = new Phaser.Point(B.center.x, B.center.y),
+				tmpDistance = Number.POSITIVE_INFINITY;
+
+			for (var i = 0; i <= 7; i = i+2) {
 				var result = OBB.pointInRectangle(BRect, [ARect[i],ARect[i+1]]);
-				if (A.manager && result) {
-					// Source: http://stackoverflow.com/questions/11301438/return-index-of-greatest-value-in-an-array
- 					var index = result.reduce(function(iMax,x,i,a) {return x>a[iMax] ? i : iMax;}, 0);
+				if (result) {
+					var newDistance = BPoint.distance(ARect[i],ARect[i+1]);
 
-					var point = [BRect[i],BRect[i+1]];
-					var line = [ARect[index], ARect[index+1], ARect[(index+2) % 7], ARect[(index+3) % 7]];
-
-					overlapVector = OBB.lineToPointVector(line, point);
-					edgeNr = i;
+					if (newDistance < tmpDistance) {
+						overlapVector = [ (B.center.x - ARect[i]), (B.center.y - ARect[i+1])];
+						edgeNr = i;
+					}
 				}
 			}
 
-			this.bounceHandlerX(B, A, overlapVector, edgeNr);
-			this.bounceHandlerY(B, A, overlapVector, edgeNr);
+			if (!overlapOnly) {
+				this.bounceHandlerX(B, A, overlapVector, edgeNr);
+				this.bounceHandlerY(B, A, overlapVector, edgeNr);
+			}
+
 			return true;
 		}
 
@@ -114,7 +118,7 @@ var OBB = {
 			return false;
 		}
 
-		return OBB.collisionCheck(body1, body2);
+		return OBB.collisionCheck(body1, body2, overlapOnly);
 	},
 
 	// returns true if the point lies in the reactangle
@@ -142,15 +146,10 @@ var OBB = {
 	},
 
 	bounceHandlerX: function (body1, body2, overlapVector, edgeNr) {
-		if (overlapVector[0])
-			var overlap = Math.max(overlapVector[0], body2.halfWidth);
-		else
-			var overlap = 1;
+		var overlap = overlapVector[0];
 
-			overlap = 0;
-
-		if (edgeNr != 6 || edgeNr != 0)
-			overlap = overlap * -1;
+		/*if (edgeNr != 6 || edgeNr != 0)
+			overlap = overlap * -1;*/
 
 		var v1 = body1.velocity.x;
 		var v2 = body2.velocity.x;
@@ -199,15 +198,10 @@ var OBB = {
 	},
 
 	bounceHandlerY: function (body1, body2, overlapVector, edgeNr) {
-		if (overlapVector[1])
-			var overlap = Math.max(overlapVector[1], body2.halfHeight);
-		else
-			var overlap = 1;
+		var overlap = overlapVector[1];
 
-			overlap = 0;
-
-		if (edgeNr != 6 || edgeNr != 0)
-			overlap = overlap * -1;
+		/*if (edgeNr != 6 || edgeNr != 0)
+			overlap = overlap * -1;*/
 
 
 		var v1 = body1.velocity.y;
@@ -291,7 +285,7 @@ OBB.debug = {
 		if (!body.obbDebug)
 			body.obbDebug = OBB.game.add.graphics(0, 0);
 
-		var r = OBB.createRectangle(body);;
+		var r = OBB.createRectangle(body);
 
 		if (body.obbDebug)
 			body.obbDebug.destroy();
