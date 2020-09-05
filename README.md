@@ -1,4 +1,9 @@
 # OBB-for-Phaser
+
+## ⚠️ WARNING ⚠️
+🚧 This project is not actively maintained and therefore in archive state. 🚧
+
+## Description
 This project is about replacing Phaser.io's Arcade Physics AABB collision detection (which doesn't offer bounding box rotation) with "Oriented bounding box" collision detection or short OBB.
 
 The great benefit: OBB supports rotating bounding boxes!
